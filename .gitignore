@@ -11,6 +11,7 @@
 !structs.h
 !init.c
 !ll_operations.c
+!run.sh
 # etc...
 
 # ...even if they are in subdirectories

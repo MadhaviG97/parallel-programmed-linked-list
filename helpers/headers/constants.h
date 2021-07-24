@@ -7,4 +7,5 @@
 #define p_insert 0.005
 #define p_delete 0.005
 #define n 1000
-#define m 800000
+#define m 10000
+#define iterations 15
