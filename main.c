@@ -2,17 +2,29 @@
 #include <stdlib.h>
 #include<time.h>
 #include<math.h>
-#include <pthread.h>
-// paralle_linked_list_rwl
+
+#define upper (unsigned int) pow(2, 16) - 1
+#define lower 0 
+#define n 10
+#define m 10000
+#define op_upper 1000
+#define op_lower 1
+#define p_member 0.99
+#define p_insert 0.005
+#define p_delete 0.005
+
 struct list_node_s {
-    int data;
+    unsigned int data;  // to hold values between 0 to 65536 in 32 bit compilers
     struct list_node_s* next;
 };
 
+typedef int (*ll_operation)(unsigned int, struct list_node_s**);
 
-int Insert(int value, struct list_node_s** head_pp);
-int Member(int value, struct list_node_s** head_pp);
-int Delete(int value, struct list_node_s** head_pp);
+void init_linked_list(struct list_node_s* ll_head);
+void generateRandomOperations(ll_operation operation_arr[], unsigned int operand_arr[]);
+int Insert(unsigned int value, struct list_node_s** head_pp);
+int Member(unsigned int value, struct list_node_s** head_pp);
+int Delete(unsigned int value, struct list_node_s** head_pp);
 
 void *Hello(void* rank){
     printf("Hellow %ld \n", (long) rank);
@@ -22,25 +34,81 @@ void *Hello(void* rank){
 int thread_count = 8;
 
 int main(){
-    pthread_t* thread_handles = malloc(thread_count*sizeof(pthread_t));
 
-    long thread;
-    for(thread=0; thread<thread_count; thread++){
-        pthread_create(&thread_handles[thread], NULL, Hello, (void*) thread);
-    }
+    ll_operation operation_arr[m] = { NULL };
+    int operand_arr[m];
+    struct list_node_s* ll_head = NULL;
 
-    for(thread=0; thread<thread_count; thread++){
-        pthread_join(thread_handles[thread], NULL);
-    }
+    init_linked_list(ll_head);
+    generateRandomOperations(operation_arr, operand_arr);
+    
+    for (int i = 0; i < m; i++)
+    {
+        (*operation_arr[i])(operand_arr[i], &ll_head);
+    }    
 
-    free(thread_handles);
-    printf("%ld", sizeof(int));
     return 0;
+}
 
-//     int upper= (int) pow((double) 2, 16) - 1;
-//     int lower=0;
-//     int n=5; int m=10000;   
-//     int op_upper=1000; int op_lower=1; 
+void init_linked_list(struct list_node_s* ll_head){
+    srand(time(0));
+    
+    int i = 0;
+    while (i < n){            
+        int rand_numb = (rand() % (upper - lower + 1)) + lower;
+        int return_val = Insert(rand_numb, &ll_head);
+        if (return_val == 1){
+            i++;
+        }
+    }
+}
+
+void generateRandomOperations(ll_operation operation_arr[], unsigned int operand_arr[]) {
+
+    int m_member = (int) (p_member*m); 
+    int m_insert = (int) (p_insert*m); 
+    int m_delete = (int) (p_delete*m);
+
+    const int w_member = (int) (p_member*op_upper); 
+    const int w_insert = (int) (p_insert*op_upper); 
+    const int w_delete = (int) (p_delete*op_upper);
+    
+    int i = 0;
+    while ((m_member + m_insert + m_delete) != 0)
+    {
+        int operation = (rand() % (op_upper - op_lower + 1)) + op_lower;
+        unsigned int rand_numb = (rand() % (upper - lower)) + lower;
+
+        if ((w_member >= operation) && (m_member != 0)){
+            m_member--;
+            operation_arr[i] = Member;
+            operand_arr[i] = rand_numb;
+            i++;
+        }
+        else if ((w_member < operation) && 
+                    (w_insert + w_member >= operation) && 
+                    (m_insert != 0)){
+            m_insert--;
+            operation_arr[i] = Insert;
+            operand_arr[i] = rand_numb;
+            i++;
+        }
+        else if (((w_insert + w_member) < operation) && 
+                    (w_delete + w_insert + w_member >= operation) && 
+                    (m_delete != 0)){
+            m_delete--;
+            operation_arr[i] = Delete;
+            operand_arr[i] = rand_numb;
+            i++;
+        }
+    }
+    return;
+}
+
+int Insert(unsigned int value, struct list_node_s** head_pp){
+    struct list_node_s* curr_p = *head_pp;
+    struct list_node_s* pred_p = NULL;
+    struct list_node_s* temp_p;
 
 //     int m_member = (int) (0.99*m); 
 //     int m_insert = (int) (0.005*m); 
@@ -132,11 +200,11 @@ int main(){
         
 }
 
-int Member(int value, struct list_node_s** head_pp){
+int Member(unsigned int value, struct list_node_s** head_pp){
     struct list_node_s* curr_p = *head_pp;
 
     while (curr_p !=NULL && curr_p->data < value){ 
-        // printf("item: %d\n", curr_p->data);
+        printf("item: %d\n", curr_p->data);
         curr_p = curr_p->next;
     }
 
@@ -146,7 +214,7 @@ int Member(int value, struct list_node_s** head_pp){
         return 1;
 }
 
-int Delete(int value, struct list_node_s** head_pp){
+int Delete(unsigned int value, struct list_node_s** head_pp){
     struct list_node_s* curr_p = *head_pp;
     struct list_node_s* pred_p = NULL;
 
