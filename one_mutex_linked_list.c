@@ -9,7 +9,7 @@ struct list_node_s {
     struct list_node_s* next;
 };
 
-pthread_nutex_t list_mutex;
+pthread_mutex_t list_mutex;
 
 void *doRandomOperations(void* rank);
 

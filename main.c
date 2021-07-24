@@ -34,6 +34,7 @@ int main(){
     }
 
     free(thread_handles);
+    printf("%ld", sizeof(int));
     return 0;
 
 //     int upper= (int) pow((double) 2, 16) - 1;
