@@ -3,7 +3,7 @@
 #include<time.h>
 #include<math.h>
 
-#define upper (int) pow((double) 2, 16) - 1
+#define upper (unsigned int) pow(2, 16) - 1
 #define lower 0 
 #define n 10
 #define m 10000
