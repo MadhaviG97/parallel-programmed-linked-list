@@ -1,4 +1,4 @@
-#define thread_count 4
+#define thread_count 8
 #define upper (unsigned int) pow(2, 16) - 1
 #define lower 0 
 #define op_upper 1000
@@ -7,4 +7,4 @@
 #define p_insert 0.005
 #define p_delete 0.005
 #define n 1000
-#define m 10000
+#define m 800000

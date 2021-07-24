@@ -24,6 +24,7 @@ void generateRandomOperations(struct operation operations[]) {
     int m_member = (int) (p_member*m); 
     int m_insert = (int) (p_insert*m); 
     int m_delete = (int) (p_delete*m);
+    // printf("\n%d %d %d\n", m_member, m_insert, m_delete);
 
     const int w_member = (int) (p_member*op_upper); 
     const int w_insert = (int) (p_insert*op_upper); 
@@ -58,5 +59,7 @@ void generateRandomOperations(struct operation operations[]) {
             i++;
         }
     }
+
+    // printf("\n%d %d %d\n", w_member, w_insert, w_delete);
     return;
 }
