@@ -1,0 +1,21 @@
+# Ignore everything
+*
+
+# But not these files...
+!.gitignore
+!one_mutex_linked_list.c
+!rw_lock_linked_list.c
+!serial_linked_list.c
+!util.h
+!constants.h
+!structs.h
+!init.c
+!ll_operations.c
+# etc...
+
+# ...even if they are in subdirectories
+!*/
+
+# gcc -Wall -c helpers/src/init.c && gcc -Wall -c helpers/src/ll_operations.c && gcc -Wall -c serial_linked_list.c && gcc -o out helpers/src/init.c helpers/src/ll_operations.c serial_linked_list.c && ./out
+
+# gcc -Wall -c helpers/src/init.c && gcc -Wall -c helpers/src/ll_operations.c && gcc -Wall -c one_mutex_linked_list.c && gcc -o out helpers/src/init.c helpers/src/ll_operations.c one_mutex_linked_list.c -lpthread && ./out
