@@ -6,7 +6,7 @@
 #include "helpers/headers/util.h"
 #include "helpers/headers/constants.h"
 
-struct operation operations[m] = { NULL };
+struct operation operations[m] = { {NULL} };
 struct list_node_s* ll_head = NULL;
 pthread_mutex_t list_mutex;
 

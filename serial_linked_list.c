@@ -4,7 +4,7 @@
 #include "helpers/headers/util.h"
 #include "helpers/headers/constants.h"
 
-struct operation operations[m] = { NULL };
+struct operation operations[m] = { {NULL} };
 double Iteration();
 
 int main(){
