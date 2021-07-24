@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include<time.h>
-#include<math.h>
+#include <time.h>
+#include <math.h>
 
 #define upper (unsigned int) pow(2, 16) - 1
 #define lower 0 
-#define n 10
-#define m 10000
+#define n 1000
+#define m 100000
 #define op_upper 1000
 #define op_lower 1
 #define p_member 0.99
@@ -18,27 +18,40 @@ struct list_node_s {
     struct list_node_s* next;
 };
 
-typedef int (*ll_operation)(unsigned int, struct list_node_s**);
+typedef int (*ll_function)(unsigned int, struct list_node_s**);
+
+struct operation {
+    ll_function function;
+    unsigned int value;
+};
 
 void init_linked_list(struct list_node_s* ll_head);
-void generateRandomOperations(ll_operation operation_arr[], unsigned int operand_arr[]);
+void generateRandomOperations(struct operation operations[]);
 int Insert(unsigned int value, struct list_node_s** head_pp);
 int Member(unsigned int value, struct list_node_s** head_pp);
 int Delete(unsigned int value, struct list_node_s** head_pp);
 
+struct operation operations[m] = { NULL };
+
 int main(){
 
-    ll_operation operation_arr[m] = { NULL };
-    int operand_arr[m];
     struct list_node_s* ll_head = NULL;
 
     init_linked_list(ll_head);
-    generateRandomOperations(operation_arr, operand_arr);
+    generateRandomOperations(operations);
     
+    clock_t start, end;
+    double cpu_time_used;
+
+    start = clock();
     for (int i = 0; i < m; i++)
     {
-        (*operation_arr[i])(operand_arr[i], &ll_head);
+        (*(operations[i].function))(operations[i].value, &ll_head);
     }    
+    end = clock();
+
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("program took %f seconds to execute \n", cpu_time_used);
 
     return 0;
 }
@@ -56,7 +69,7 @@ void init_linked_list(struct list_node_s* ll_head){
     }
 }
 
-void generateRandomOperations(ll_operation operation_arr[], unsigned int operand_arr[]) {
+void generateRandomOperations(struct operation operations[]) {
 
     int m_member = (int) (p_member*m); 
     int m_insert = (int) (p_insert*m); 
@@ -74,24 +87,24 @@ void generateRandomOperations(ll_operation operation_arr[], unsigned int operand
 
         if ((w_member >= operation) && (m_member != 0)){
             m_member--;
-            operation_arr[i] = Member;
-            operand_arr[i] = rand_numb;
+            operations[i].function = Member;
+            operations[i].value = rand_numb;
             i++;
         }
         else if ((w_member < operation) && 
                     (w_insert + w_member >= operation) && 
                     (m_insert != 0)){
             m_insert--;
-            operation_arr[i] = Insert;
-            operand_arr[i] = rand_numb;
+            operations[i].function = Insert;
+            operations[i].value = rand_numb;
             i++;
         }
         else if (((w_insert + w_member) < operation) && 
                     (w_delete + w_insert + w_member >= operation) && 
                     (m_delete != 0)){
             m_delete--;
-            operation_arr[i] = Delete;
-            operand_arr[i] = rand_numb;
+            operations[i].function = Delete;
+            operations[i].value = rand_numb;
             i++;
         }
     }
@@ -127,7 +140,7 @@ int Member(unsigned int value, struct list_node_s** head_pp){
     struct list_node_s* curr_p = *head_pp;
 
     while (curr_p !=NULL && curr_p->data < value){ 
-        printf("item: %d\n", curr_p->data);
+        // printf("item: %d\n", curr_p->data);
         curr_p = curr_p->next;
     }
 
