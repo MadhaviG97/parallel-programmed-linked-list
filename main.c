@@ -14,26 +14,36 @@
 #define p_delete 0.005
 
 struct list_node_s {
-    int data;
+    unsigned int data;  // to hold values between 0 to 65536 in 32 bit compilers
     struct list_node_s* next;
 };
 
-typedef int (*ll_operation)(int, struct list_node_s**);
+typedef int (*ll_operation)(unsigned int, struct list_node_s**);
 
-void generateRandomOperations(ll_operation operation_arr[], int operand_arr[]);
-int Insert(int value, struct list_node_s** head_pp);
-int Member(int value, struct list_node_s** head_pp);
-int Delete(int value, struct list_node_s** head_pp);
+void init_linked_list(struct list_node_s* ll_head);
+void generateRandomOperations(ll_operation operation_arr[], unsigned int operand_arr[]);
+int Insert(unsigned int value, struct list_node_s** head_pp);
+int Member(unsigned int value, struct list_node_s** head_pp);
+int Delete(unsigned int value, struct list_node_s** head_pp);
 
 int main(){
 
     ll_operation operation_arr[m] = { NULL };
     int operand_arr[m];
-
-    generateRandomOperations(operation_arr, operand_arr);
-    
     struct list_node_s* ll_head = NULL;
 
+    init_linked_list(ll_head);
+    generateRandomOperations(operation_arr, operand_arr);
+    
+    for (int i = 0; i < m; i++)
+    {
+        (*operation_arr[i])(operand_arr[i], &ll_head);
+    }    
+
+    return 0;
+}
+
+void init_linked_list(struct list_node_s* ll_head){
     srand(time(0));
     
     int i = 0;
@@ -44,16 +54,9 @@ int main(){
             i++;
         }
     }
-    
-    for (i = 0; i < m; i++)
-    {
-        (*operation_arr[i])(operand_arr[i], &ll_head);
-    }    
-
-    return 0;
 }
 
-void generateRandomOperations(ll_operation operation_arr[], int operand_arr[]) {
+void generateRandomOperations(ll_operation operation_arr[], unsigned int operand_arr[]) {
 
     int m_member = (int) (p_member*m); 
     int m_insert = (int) (p_insert*m); 
@@ -67,7 +70,7 @@ void generateRandomOperations(ll_operation operation_arr[], int operand_arr[]) {
     while ((m_member + m_insert + m_delete) != 0)
     {
         int operation = (rand() % (op_upper - op_lower + 1)) + op_lower;
-        int rand_numb = (rand() % (upper - lower)) + lower;
+        unsigned int rand_numb = (rand() % (upper - lower)) + lower;
 
         if ((w_member >= operation) && (m_member != 0)){
             m_member--;
@@ -95,7 +98,7 @@ void generateRandomOperations(ll_operation operation_arr[], int operand_arr[]) {
     return;
 }
 
-int Insert(int value, struct list_node_s** head_pp){
+int Insert(unsigned int value, struct list_node_s** head_pp){
     struct list_node_s* curr_p = *head_pp;
     struct list_node_s* pred_p = NULL;
     struct list_node_s* temp_p;
@@ -120,7 +123,7 @@ int Insert(int value, struct list_node_s** head_pp){
         
 }
 
-int Member(int value, struct list_node_s** head_pp){
+int Member(unsigned int value, struct list_node_s** head_pp){
     struct list_node_s* curr_p = *head_pp;
 
     while (curr_p !=NULL && curr_p->data < value){ 
@@ -134,7 +137,7 @@ int Member(int value, struct list_node_s** head_pp){
         return 1;
 }
 
-int Delete(int value, struct list_node_s** head_pp){
+int Delete(unsigned int value, struct list_node_s** head_pp){
     struct list_node_s* curr_p = *head_pp;
     struct list_node_s* pred_p = NULL;
 
