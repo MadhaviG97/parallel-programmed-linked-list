@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <math.h>
+#include <sys/time.h>
 
 #include "helpers/headers/util.h"
 #include "helpers/headers/constants.h"
@@ -15,7 +16,7 @@ double Iteration();
 
 int main(){
     int i;
-    double sum;
+    double sum = 0;
     double time[iterations];
 
     for(i = 0; i < iterations; i++)
@@ -51,10 +52,12 @@ double Iteration(){
         return 1;
     }
 
-    clock_t start, end;
-    double cpu_time_used;
+    // clock_t start, end;
+    // double cpu_time_used;
+    // start = clock();
 
-    start = clock();
+    struct timeval begin, end;
+    gettimeofday(&begin, 0);
 
     thread_handles = malloc(thread_count * sizeof(pthread_t));
     for (thread = 0; thread < thread_count; thread++){
@@ -66,12 +69,17 @@ double Iteration(){
     }
 
     free(thread_handles);
+    pthread_rwlock_destroy(&rw_lock);
 
-    end = clock();
+    // end = clock();
+    // cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    gettimeofday(&end, 0);
+    long seconds = end.tv_sec - begin.tv_sec;
+    long microseconds = end.tv_usec - begin.tv_usec;
+    double elapsed = seconds + microseconds*1e-6;
 
-    return cpu_time_used;
+    return elapsed;
 }
 
 void *doRandomOperations(void *rank) {
@@ -81,15 +89,12 @@ void *doRandomOperations(void *rank) {
     int my_first_row = my_rank * local_m;
     int my_last_row = (my_rank + 1) * local_m - 1;
 
-    // int mem=0;
-
     int i;
     for (i = my_first_row; i <= my_last_row; i++){
         if (*Member == (operations[i].function)){            
             pthread_rwlock_rdlock(&rw_lock);
             (*(operations[i].function))(operations[i].value, &ll_head);
             pthread_rwlock_unlock(&rw_lock);
-            // mem++;
         }
         else{
             pthread_rwlock_wrlock(&rw_lock);
@@ -97,7 +102,6 @@ void *doRandomOperations(void *rank) {
             pthread_rwlock_unlock(&rw_lock);
         }
     }
-    // printf("rank : %ld first row: %d last row: %d \nMember: %d Other: %d\n\n", my_rank, my_first_row, my_last_row, mem, local_m-mem);
 
     return NULL;
 }
