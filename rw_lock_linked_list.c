@@ -15,13 +15,13 @@ double Iteration();
 
 int main(){
     int i;
-    double sum;
-    double time[iterations];
+    double sum=0;
+    double t[iterations];
 
     for(i = 0; i < iterations; i++)
     {
-        time[i] = Iteration();
-        sum += time[i];
+        t[i] = Iteration();
+        sum += t[i];
     }
 
     double average = sum/iterations;
@@ -29,7 +29,7 @@ int main(){
 
     for ( i = 0; i < iterations; i++)
     {
-       error_sum += pow(time[i]-average, 2);
+       error_sum += pow(t[i]-average, 2);
     }
     
     double std = sqrt(error_sum/iterations);
@@ -51,10 +51,8 @@ double Iteration(){
         return 1;
     }
 
-    clock_t start, end;
-    double cpu_time_used;
-
-    start = clock();
+    struct timespec start, finish;    
+    clock_gettime(CLOCK_MONOTONIC, &start);
 
     thread_handles = malloc(thread_count * sizeof(pthread_t));
     for (thread = 0; thread < thread_count; thread++){
@@ -67,11 +65,10 @@ double Iteration(){
 
     free(thread_handles);
 
-    end = clock();
+    clock_gettime(CLOCK_MONOTONIC, &finish);
 
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-
-    return cpu_time_used;
+    double time_spent = (finish.tv_sec - start.tv_sec) + ((finish.tv_nsec - start.tv_nsec) / BILLION);
+    return time_spent;
 }
 
 void *doRandomOperations(void *rank) {
@@ -95,6 +92,7 @@ void *doRandomOperations(void *rank) {
             pthread_rwlock_wrlock(&rw_lock);
             (*(operations[i].function))(operations[i].value, &ll_head);
             pthread_rwlock_unlock(&rw_lock);
+            // mem++;
         }
     }
     // printf("rank : %ld first row: %d last row: %d \nMember: %d Other: %d\n\n", my_rank, my_first_row, my_last_row, mem, local_m-mem);

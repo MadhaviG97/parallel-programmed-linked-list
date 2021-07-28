@@ -7,6 +7,8 @@
 #include "../headers/constants.h"
 
 void init_linked_list(struct list_node_s* ll_head){
+    // new linked list
+    ll_head = NULL;
     srand(time(0));
     
     int i = 0;

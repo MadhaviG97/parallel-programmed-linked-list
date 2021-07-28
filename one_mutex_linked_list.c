@@ -15,7 +15,7 @@ double Iteration();
 
 int main(){
     int i;
-    double sum;
+    double sum=0;
     double time[iterations];
 
     for(i = 0; i < iterations; i++)
@@ -49,10 +49,8 @@ double Iteration(){
         return 1;
     }
 
-    clock_t start, end;
-    double cpu_time_used;
-
-    start = clock();
+    struct timespec start, finish;    
+    clock_gettime(CLOCK_MONOTONIC, &start);
 
     thread_handles = malloc(thread_count * sizeof(pthread_t));
     for (thread = 0; thread < thread_count; thread++){
@@ -63,10 +61,14 @@ double Iteration(){
         pthread_join(thread_handles[thread], NULL);
     }
 
+    pthread_mutex_destroy(&list_mutex);
+
     free(thread_handles);
-    end = clock();
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    return  cpu_time_used;
+
+    clock_gettime(CLOCK_MONOTONIC, &finish);
+
+    double time_spent = (finish.tv_sec - start.tv_sec) + ((finish.tv_nsec - start.tv_nsec) / BILLION);
+    return time_spent;
 }
 
 

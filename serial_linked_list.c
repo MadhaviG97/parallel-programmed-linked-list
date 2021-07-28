@@ -9,7 +9,7 @@ double Iteration();
 
 int main(){
     int i;
-    double sum;
+    double sum=0;
     double time[iterations];
 
     for(i = 0; i < iterations; i++)
@@ -36,18 +36,19 @@ double Iteration(){
 
     init_linked_list(ll_head);
     generateRandomOperations(operations);
-    
-    clock_t start, end;
-    double cpu_time_used;
 
-    start = clock();
+    struct timespec start, finish;
+    clock_gettime(CLOCK_REALTIME, &start);
+
     for (int i = 0; i < m; i++)
     {
         (*(operations[i].function))(operations[i].value, &ll_head);
-    }    
-    end = clock();
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    }
 
-    return cpu_time_used;    
+    clock_gettime(CLOCK_REALTIME, &finish);
+    double time_spent = (finish.tv_sec - start.tv_sec) +
+                        ((finish.tv_nsec - start.tv_nsec) / BILLION);
+
+    return time_spent;
 }
 
