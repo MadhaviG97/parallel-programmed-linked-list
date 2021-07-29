@@ -8,5 +8,7 @@
 #define p_delete 0.005
 #define n 1000
 #define m 10000
-#define iterations 50
+#define s_iterations 100
+#define r_iterations 100
+#define m_iterations 100
 #define BILLION  1000000000.0

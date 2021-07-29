@@ -16,23 +16,23 @@ double Iteration();
 int main(){
     int i;
     double sum=0;
-    double t[iterations];
+    double t[r_iterations];
 
-    for(i = 0; i < iterations; i++)
+    for(i = 0; i < r_iterations; i++)
     {
         t[i] = Iteration()*pow(10,6);
         sum += t[i];
     }
 
-    double average = sum/iterations;
+    double average = sum/r_iterations;
     double error_sum = 0;
 
-    for ( i = 0; i < iterations; i++)
+    for ( i = 0; i < r_iterations; i++)
     {
        error_sum += pow(t[i]-average, 2);
     }
     
-    double std = sqrt(error_sum/(iterations-1));
+    double std = sqrt(error_sum/(r_iterations-1));
     double suff_n = pow( ((100*1.96*std)/(5*average)) ,2);
 
     printf("RWL - Average: %f, STD: %f n: %f\n", average, std, suff_n);

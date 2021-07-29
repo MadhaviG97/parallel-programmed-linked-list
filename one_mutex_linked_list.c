@@ -16,24 +16,24 @@ double Iteration();
 int main(){
     int i;
     double sum=0;
-    double time[iterations];
+    double time[m_iterations];
 
-    for(i = 0; i < iterations; i++)
+    for(i = 0; i < m_iterations; i++)
     {
         time[i] = Iteration()*pow(10,6);
         sum += time[i];
         // printf("%f\n", time[i]);
     }
 
-    double average = sum/iterations;
+    double average = sum/m_iterations;
     double error_sum = 0;
 
-    for ( i = 0; i < iterations; i++)
+    for ( i = 0; i < m_iterations; i++)
     {
        error_sum += pow(time[i]-average, 2);
     }
     
-    double std = sqrt(error_sum/(iterations-1));
+    double std = sqrt(error_sum/(m_iterations-1));
     double suff_n = (100*1.96*std)/(5*average);
 
     printf("MTX - Average: %f, STD: %f n: %f\n", average, std, pow(suff_n,2));
