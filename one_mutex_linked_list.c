@@ -20,8 +20,9 @@ int main(){
 
     for(i = 0; i < iterations; i++)
     {
-        time[i] = Iteration();
+        time[i] = Iteration()*pow(10,6);
         sum += time[i];
+        // printf("%f\n", time[i]);
     }
 
     double average = sum/iterations;
@@ -32,8 +33,10 @@ int main(){
        error_sum += pow(time[i]-average, 2);
     }
     
-    double std = sqrt(error_sum/iterations);
-    printf("MUT - Average: %f, STD: %f\n", average, std);    
+    double std = sqrt(error_sum/(iterations-1));
+    double suff_n = (100*1.96*std)/(5*average);
+
+    printf("MTX - Average: %f, STD: %f n: %f\n", average, std, pow(suff_n,2));
     return 0;
 }
 

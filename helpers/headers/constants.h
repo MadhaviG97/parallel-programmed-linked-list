@@ -1,4 +1,4 @@
-#define thread_count 4
+#define thread_count 1
 #define upper (unsigned int) pow(2, 16) - 1
 #define lower 0 
 #define op_upper 1000
@@ -8,5 +8,5 @@
 #define p_delete 0.005
 #define n 1000
 #define m 10000
-#define iterations 200
+#define iterations 50
 #define BILLION  1000000000.0

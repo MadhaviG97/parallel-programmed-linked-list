@@ -20,7 +20,7 @@ int main(){
 
     for(i = 0; i < iterations; i++)
     {
-        t[i] = Iteration();
+        t[i] = Iteration()*pow(10,6);
         sum += t[i];
     }
 
@@ -32,9 +32,10 @@ int main(){
        error_sum += pow(t[i]-average, 2);
     }
     
-    double std = sqrt(error_sum/iterations);
-    printf("RWL - Average: %f, STD: %f\n", average, std);    
-    return 0;
+    double std = sqrt(error_sum/(iterations-1));
+    double suff_n = pow( ((100*1.96*std)/(5*average)) ,2);
+
+    printf("RWL - Average: %f, STD: %f n: %f\n", average, std, suff_n);
 
     return 0;
 }

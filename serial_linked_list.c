@@ -14,7 +14,7 @@ int main(){
 
     for(i = 0; i < iterations; i++)
     {
-        time[i] = Iteration();
+        time[i] = Iteration()*pow(10,6);
         sum += time[i];
     }
 
@@ -26,8 +26,11 @@ int main(){
        error_sum += pow(time[i]-average, 2);
     }
     
-    double std = sqrt(error_sum/iterations);
-    printf("SRL - Average: %f, STD: %f\n", average, std);    
+    double std = sqrt(error_sum/(iterations-1));
+    double suff_n = pow( ((100*1.96*std)/(5*average)) ,2);
+
+    printf("SRL - Average: %f, STD: %f n: %f\n", average, std, suff_n);
+
     return 0;
 }
 
