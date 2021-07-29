@@ -9,7 +9,7 @@
 
 struct operation operations[m] = { {NULL} };
 struct list_node_s* ll_head = NULL;
-pthread_mutex_t list_mutex;
+pthread_mutex_t list_mutex = PTHREAD_MUTEX_INITIALIZER;;
 
 void *doRandomOperations(void *rank);
 double Iteration();
@@ -54,8 +54,11 @@ double Iteration(){
     // double cpu_time_used;
     // start = clock();
 
-    struct timeval begin, end;
-    gettimeofday(&begin, 0);
+    // struct timeval begin, end;
+    // gettimeofday(&begin, 0);
+
+    struct timespec start, finish;    
+    clock_gettime(CLOCK_REALTIME, &start);
 
     thread_handles = malloc(thread_count * sizeof(pthread_t));
     for (thread = 0; thread < thread_count; thread++){
@@ -66,17 +69,23 @@ double Iteration(){
         pthread_join(thread_handles[thread], NULL);
     }
 
+    pthread_mutex_destroy(&list_mutex);
+
     free(thread_handles);
     
     // end = clock();
     // cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 
-    gettimeofday(&end, 0);
-    long seconds = end.tv_sec - begin.tv_sec;
-    long microseconds = end.tv_usec - begin.tv_usec;
-    double elapsed = seconds + microseconds*1e-6;
+    // gettimeofday(&end, 0);
+    // long seconds = end.tv_sec - begin.tv_sec;
+    // long microseconds = end.tv_usec - begin.tv_usec;
+    // double elapsed = seconds + microseconds*1e-6;
 
-    return  elapsed;
+    clock_gettime(CLOCK_REALTIME, &finish);
+    double time_spent = (finish.tv_sec - start.tv_sec) + ((finish.tv_nsec - start.tv_nsec) / BILLION);
+
+    return time_spent;
+
 }
 
 

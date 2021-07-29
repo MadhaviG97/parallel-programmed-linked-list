@@ -7,7 +7,8 @@
 #include "helpers/headers/util.h"
 #include "helpers/headers/constants.h"
 
-struct operation operations[m] = { NULL };
+// struct operation operations[m] = { NULL };
+int operations[m];
 struct list_node_s* ll_head = NULL;
 pthread_rwlock_t rw_lock;
 
@@ -17,12 +18,12 @@ double Iteration();
 int main(){
     int i;
     double sum = 0;
-    double time[iterations];
+    double t[iterations];
 
     for(i = 0; i < iterations; i++)
     {
-        time[i] = Iteration();
-        sum += time[i];
+        t[i] = Iteration();
+        sum += t[i];
     }
 
     double average = sum/iterations;
@@ -30,7 +31,7 @@ int main(){
 
     for ( i = 0; i < iterations; i++)
     {
-       error_sum += pow(time[i]-average, 2);
+       error_sum += pow(t[i]-average, 2);
     }
     
     double std = sqrt(error_sum/iterations);
@@ -52,12 +53,17 @@ double Iteration(){
         return 1;
     }
 
+
     // clock_t start, end;
     // double cpu_time_used;
     // start = clock();
 
-    struct timeval begin, end;
-    gettimeofday(&begin, 0);
+    // struct timeval begin, end;
+    // gettimeofday(&begin, 0);
+
+    struct timespec start, finish;    
+    clock_gettime(CLOCK_REALTIME, &start);
+
 
     thread_handles = malloc(thread_count * sizeof(pthread_t));
     for (thread = 0; thread < thread_count; thread++){
@@ -74,12 +80,16 @@ double Iteration(){
     // end = clock();
     // cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 
-    gettimeofday(&end, 0);
-    long seconds = end.tv_sec - begin.tv_sec;
-    long microseconds = end.tv_usec - begin.tv_usec;
-    double elapsed = seconds + microseconds*1e-6;
+    // gettimeofday(&end, 0);
+    // long seconds = end.tv_sec - begin.tv_sec;
+    // long microseconds = end.tv_usec - begin.tv_usec;
+    // double elapsed = seconds + microseconds*1e-6;
 
-    return elapsed;
+    clock_gettime(CLOCK_REALTIME, &finish);
+    double time_spent = (finish.tv_sec - start.tv_sec) + ((finish.tv_nsec - start.tv_nsec) / BILLION);
+
+    return time_spent;
+
 }
 
 void *doRandomOperations(void *rank) {
@@ -91,14 +101,23 @@ void *doRandomOperations(void *rank) {
 
     int i;
     for (i = my_first_row; i <= my_last_row; i++){
-        if (*Member == (operations[i].function)){            
+        unsigned int rand_numb = (rand() % (upper - lower)) + lower;
+        // if (*Member == (operations[i].function)){       
+        if (operations[i] == 0){         
             pthread_rwlock_rdlock(&rw_lock);
-            (*(operations[i].function))(operations[i].value, &ll_head);
+            // (*(operations[i].function))(operations[i].value, &ll_head);
+            Member(rand_numb, ll_head);
             pthread_rwlock_unlock(&rw_lock);
         }
-        else{
+        else if (operations[i] == 1) {
             pthread_rwlock_wrlock(&rw_lock);
-            (*(operations[i].function))(operations[i].value, &ll_head);
+            // (*(operations[i].function))(operations[i].value, &ll_head);
+            Insert(rand_numb, &ll_head);
+            pthread_rwlock_unlock(&rw_lock);
+        } else {
+            pthread_rwlock_wrlock(&rw_lock);
+            // (*(operations[i].function))(operations[i].value, &ll_head);
+            Delete(rand_numb, &ll_head);
             pthread_rwlock_unlock(&rw_lock);
         }
     }

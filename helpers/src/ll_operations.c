@@ -5,10 +5,10 @@
 
 #include "../headers/util.h"
 
-int Member(unsigned int value, struct list_node_s** head_pp){
-    struct list_node_s* curr_p = *head_pp;
+int Member(unsigned int value, struct list_node_s* head_p){
+    struct list_node_s* curr_p = head_p;
 
-    while (curr_p !=NULL && curr_p->data < value){ 
+    while (curr_p != NULL && curr_p->data < value){ 
         // printf("item: %d\n", curr_p->data);
         curr_p = curr_p->next;
     }
@@ -24,7 +24,7 @@ int Insert(unsigned int value, struct list_node_s** head_pp){
     struct list_node_s* pred_p = NULL;
     struct list_node_s* temp_p;
 
-    while (curr_p !=NULL && curr_p->data < value){
+    while (curr_p != NULL && curr_p->data < value){
         pred_p = curr_p;
         curr_p = curr_p->next;
     }
@@ -48,7 +48,7 @@ int Delete(unsigned int value, struct list_node_s** head_pp){
     struct list_node_s* curr_p = *head_pp;
     struct list_node_s* pred_p = NULL;
 
-    while (curr_p !=NULL && curr_p->data < value){
+    while (curr_p != NULL && curr_p->data < value){
         pred_p = curr_p;
         curr_p = curr_p->next;
     }
